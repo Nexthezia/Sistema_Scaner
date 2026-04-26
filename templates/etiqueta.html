@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Etiqueta {{ codigo_barras }}</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: white;
+      width: 80mm;
+    }
+
+    .etiqueta {
+      width: 72mm;
+      padding: 3mm;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .cabecera {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #000;
+      padding-bottom: 3px;
+      margin-bottom: 2px;
+    }
+
+    .id {
+      font-size: 16px;
+      font-weight: 900;
+    }
+
+    .fecha {
+      font-size: 9px;
+      color: #444;
+      text-align: right;
+    }
+
+    .codigo {
+      font-family: 'Courier New', monospace;
+      font-size: 10px;
+      font-weight: bold;
+      letter-spacing: 1px;
+      text-align: center;
+      background: #f0f0f0;
+      padding: 2px 4px;
+      border-radius: 2px;
+    }
+
+    /* Bloque de ubicación */
+    .ubicacion-box {
+      background: #000;
+      color: #fff;
+      padding: 4px 6px;
+      border-radius: 2px;
+    }
+
+    .ubicacion-box .municipio {
+      font-size: 15px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      text-align: center;
+    }
+
+    .ubicacion-box .depa-tienda {
+      display: flex;
+      justify-content: space-between;
+      font-size: 8px;
+      color: #ccc;
+      margin-top: 2px;
+    }
+
+    .fila {
+      display: flex;
+      justify-content: space-between;
+      gap: 4px;
+    }
+
+    .campo {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+
+    .label {
+      font-size: 7px;
+      text-transform: uppercase;
+      color: #777;
+      letter-spacing: 0.3px;
+    }
+
+    .valor {
+      font-size: 11px;
+      font-weight: bold;
+      color: #000;
+    }
+
+    .precios {
+      display: flex;
+      justify-content: space-around;
+      border-top: 1px dashed #888;
+      padding-top: 4px;
+      margin-top: 2px;
+    }
+
+    .precio-item {
+      text-align: center;
+    }
+
+    .precio-item .monto {
+      font-size: 14px;
+      font-weight: 900;
+    }
+
+    @media print {
+      @page {
+        width: 80mm;
+        height: auto;
+        margin: 0;
+      }
+
+      body {
+        width: 80mm;
+        margin: 0;
+      }
+    }
+  </style>
+
+  <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
+</head>
+
+<body>
+  <div class="etiqueta">
+
+    <div class="cabecera">
+      <div class="id">#{{ id_paquete }}</div>
+      <div class="fecha" id="fecha-hora"></div>
+    </div>
+
+    <div style="text-align:center;">
+      <svg id="barcode"></svg>
+    </div>
+
+    <div class="ubicacion-box">
+      <div class="municipio">{{ municipio }}</div>
+      <div class="depa-tienda">
+        <span>{{ departamento }}</span>
+        <span>{{ tienda }}</span>
+      </div>
+    </div>
+
+    <div class="fila">
+      <div class="campo">
+        <span class="label">Cliente</span>
+        <span class="valor">{{ nombre_cliente }}</span>
+      </div>
+      <div class="campo">
+        <span class="label">Teléfono</span>
+        <span class="valor">{{ telefono }}</span>
+      </div>
+    </div>
+
+    <div class="fila">
+      <div class="campo">
+        <span class="label">Vendedor</span>
+        <span class="valor">{{ nombre_vendedor }}</span>
+      </div>
+    </div>
+
+    <div class="precios">
+      <div class="precio-item">
+        <div class="label">Precio</div>
+        <div class="monto">${{ precio }}</div>
+      </div>
+      <div class="precio-item">
+        <div class="label">Envío</div>
+        <div class="monto">${{ envio }}</div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    const ahora = new Date();
+    document.getElementById("fecha-hora").textContent =
+      ahora.toLocaleDateString("es-SV") + " " +
+      ahora.toLocaleTimeString("es-SV", { hour: "2-digit", minute: "2-digit" });
+
+    JsBarcode("#barcode", "{{ codigo_barras }}", {
+        format: "CODE128",
+        width: 0.9,
+        height: 40,
+        displayValue: true,
+        fontSize: 9,
+        margin: 2,
+        background: "#ffffff",
+        lineColor: "#000000"
+      });
+
+    window.onload = () => window.print();
+  </script>
+</body>
+
+</html>

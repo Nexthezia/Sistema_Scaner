@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Registrar Paquete</title>
+</head>
+<body>
+
+<h2>Registrar Paquete</h2>
+
+<form method="POST" action="{{ url_for('paquetes.guardar_paquete') }}">
+
+    <input name="nombre_cliente" placeholder="Cliente" required><br><br>
+
+    <input name="nombre_vendedor" placeholder="Vendedor"><br><br>
+
+    <input name="telefono" placeholder="Teléfono"><br><br>
+
+    <input name="email" placeholder="Email"><br><br>
+
+    <hr>
+
+    <label>Departamento</label><br>
+    <select id="departamento" name="id_departamento"></select><br><br>
+
+    <label>Municipio</label><br>
+    <select id="municipio" name="id_municipio"></select><br><br>
+
+    <label>Tienda</label><br>
+    <select id="tienda" name="id_tienda"></select><br><br>
+
+    <hr>
+
+
+    <label>Valor del paquete:</label>
+    <input type="number" step="0.01" name="precio" placeholder="Precio"><br><br>
+    
+    <label>Costo de envio</label>
+    <input name="envio" placeholder="Envío"><br><br>
+
+
+    <lable>comision de vendedor</lable>
+    <input name="comision" placeholder="Comisión"><br><br>
+
+    <label>Guardar paquete</label>
+    <button type="submit">Guardar</button>
+
+</form>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const dep = document.getElementById("departamento");
+    const mun = document.getElementById("municipio");
+    const tienda = document.getElementById("tienda");
+
+    // departamentos
+    fetch("/paquetes/departamentos")
+        .then(r => r.json())
+        .then(data => {
+            data.forEach(d => {
+                dep.innerHTML += `<option value="${d.id_departamento}">${d.nombre}</option>`;
+            });
+        });
+
+    // municipios
+    dep.addEventListener("change", function () {
+        mun.innerHTML = "";
+        tienda.innerHTML = "";
+
+        fetch(`/paquetes/municipios/${this.value}`)
+            .then(r => r.json())
+            .then(data => {
+                data.forEach(m => {
+                    mun.innerHTML += `<option value="${m.id_municipio}">${m.nombre}</option>`;
+                });
+            });
+    });
+
+    // tiendas
+    mun.addEventListener("change", function () {
+        tienda.innerHTML = "";
+
+        fetch(`/paquetes/tiendas/${this.value}`)
+            .then(r => r.json())
+            .then(data => {
+                data.forEach(t => {
+                    tienda.innerHTML += `<option value="${t.id_tienda}">${t.nombre}</option>`;
+                });
+            });
+    });
+
+});
+</script>
+
+</body>
+</html>
