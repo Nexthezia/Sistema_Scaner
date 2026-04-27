@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/Global.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/Menu.css') }}">
+    <title>{{ title_web }}</title>
+    {% block head %}{% endblock %}
+</head>
+<body>
+    <!-- Menú de Navegación -->
+    <nav class="MenuNavegacion">
+        <div class="MenuContenedor">
+            <div class="Logo">
+                <a href="{{ url_for('index') }}">📦 ScanLogix</a>
+            </div>
+            
+            <button class="BtnMenuMobile" id="btnMenuMobile">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+
+            <ul class="MenuLinks" id="menuLinks">
+                <li><a href="{{ url_for('index') }}" class="link-menu">🏠 Inicio</a></li>
+                <li><a href="{{ url_for('paquetes.nuevo_paquete') }}" class="link-menu">📝 Registrar Paquete</a></li>
+                <li><a href="{{ url_for('rutas.gestionar_rutas') }}" class="link-menu">🗺️ Gestionar Rutas</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="ContenidoPrincipal">
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <script src="{{ url_for('static', filename='js/menu.js') }}"></script>
+</body>
+</html>

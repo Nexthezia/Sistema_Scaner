@@ -1,0 +1,635 @@
+.RutasDashboard {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    padding: 12px 0 28px;
+    color: #0f172a;
+    font-family: "Segoe UI", Inter, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.RutasDashboard * {
+    box-sizing: border-box;
+}
+
+.RutasHero,
+.FilterCard,
+.TableCard {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(148, 163, 184, 0.22);
+    border-radius: 24px;
+    background: rgba(255, 255, 255, 0.8);
+    box-shadow: 0 24px 60px rgba(15, 23, 42, 0.08);
+    backdrop-filter: blur(12px);
+}
+
+.RutasHero {
+    display: grid;
+    grid-template-columns: minmax(0, 1.5fr) minmax(280px, 0.9fr);
+    gap: 24px;
+    padding: 28px;
+    background:
+        radial-gradient(circle at top right, rgba(14, 165, 233, 0.18), transparent 34%),
+        radial-gradient(circle at bottom left, rgba(34, 197, 94, 0.14), transparent 32%),
+        linear-gradient(135deg, rgba(248, 250, 252, 0.96), rgba(255, 255, 255, 0.9));
+}
+
+.RutasHero__copy {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 14px;
+}
+
+.RutasEyebrow,
+.SectionLabel {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    width: fit-content;
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: rgba(15, 23, 42, 0.06);
+    color: #0f172a;
+    font-size: 0.78rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.SectionLabel--light {
+    background: rgba(255, 255, 255, 0.14);
+    color: rgba(255, 255, 255, 0.92);
+}
+
+.RutasHero h1 {
+    margin: 0;
+    font-size: clamp(2rem, 4vw, 3.8rem);
+    line-height: 1.02;
+    letter-spacing: -0.03em;
+    color: #08101f;
+}
+
+.RutasHero__text {
+    max-width: 60ch;
+    margin: 0;
+    color: #475569;
+    font-size: 1rem;
+    line-height: 1.7;
+}
+
+.RutasHero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 4px;
+}
+
+.BtnPrimary,
+.BtnSecondary,
+.BtnGhost,
+.FilterCard__clear {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 46px;
+    padding: 0 18px;
+    border-radius: 14px;
+    font-weight: 700;
+    text-decoration: none;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+}
+
+.BtnPrimary {
+    border: 0;
+    background: linear-gradient(135deg, #0f172a, #1d4ed8);
+    color: #fff;
+    box-shadow: 0 18px 30px rgba(15, 23, 42, 0.18);
+}
+
+.BtnPrimary:hover,
+.BtnSecondary:hover,
+.BtnGhost:hover,
+.FilterCard__clear:hover,
+.BtnAction:hover {
+    transform: translateY(-1px);
+}
+
+.BtnSecondary,
+.BtnGhost,
+.FilterCard__clear {
+    border: 1px solid rgba(15, 23, 42, 0.14);
+    color: #0f172a;
+    background: rgba(255, 255, 255, 0.82);
+}
+
+.BtnGhost {
+    background: transparent;
+}
+
+.RutasMetrics {
+    display: grid;
+    gap: 14px;
+    align-content: center;
+}
+
+.MetricCard {
+    padding: 18px 20px;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(148, 163, 184, 0.18);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+.MetricCard--accent {
+    background: linear-gradient(135deg, rgba(15, 23, 42, 0.96), rgba(30, 64, 175, 0.92));
+    color: #fff;
+}
+
+.MetricCard__label {
+    display: block;
+    font-size: 0.82rem;
+    color: inherit;
+    opacity: 0.8;
+}
+
+.MetricCard__value {
+    display: block;
+    margin-top: 8px;
+    font-size: 2rem;
+    line-height: 1;
+    letter-spacing: -0.04em;
+}
+
+.FilterCard,
+.TableCard {
+    padding: 22px;
+}
+
+.FilterCard__header,
+.TableCard__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 18px;
+}
+
+.FilterCard h2,
+.TableCard h2 {
+    margin: 6px 0 0;
+    font-size: 1.45rem;
+    color: #08101f;
+}
+
+.FilterForm {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+    gap: 16px;
+    align-items: end;
+}
+
+.FormField {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.FormField label {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #1e293b;
+}
+
+.FormField select {
+    width: 100%;
+    min-height: 48px;
+    border: 1px solid rgba(148, 163, 184, 0.34);
+    border-radius: 14px;
+    padding: 0 14px;
+    background: #fff;
+    color: #0f172a;
+    font-size: 0.98rem;
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.FormField select:focus {
+    border-color: rgba(37, 99, 235, 0.7);
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+}
+
+.FormField small {
+    color: #64748b;
+    font-size: 0.82rem;
+    line-height: 1.45;
+}
+
+.FilterActions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.BtnPrimary--submit {
+    cursor: pointer;
+}
+
+.TableCard__badge {
+    display: inline-flex;
+    align-items: center;
+    min-height: 34px;
+    padding: 0 12px;
+    border-radius: 999px;
+    background: rgba(15, 23, 42, 0.06);
+    color: #0f172a;
+    font-size: 0.86rem;
+    font-weight: 700;
+}
+
+.RoutesTableWrap {
+    overflow-x: auto;
+    border-radius: 18px;
+    border: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+.RoutesTableWrap--modal {
+    border-radius: 16px;
+}
+
+.RoutesTable {
+    width: 100%;
+    min-width: 980px;
+    border-collapse: collapse;
+    background: #fff;
+}
+
+.RoutesTable thead {
+    background: linear-gradient(135deg, #0f172a, #111827);
+    color: #fff;
+}
+
+.RoutesTable th,
+.RoutesTable td {
+    padding: 16px 18px;
+    text-align: left;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.16);
+    vertical-align: middle;
+}
+
+.RoutesTable tbody tr {
+    transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.RoutesTable tbody tr:hover {
+    background: #f8fbff;
+}
+
+.RouteId {
+    font-weight: 800;
+    color: #0f172a;
+}
+
+.RouteNameBlock {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.RouteNameBlock strong {
+    color: #08101f;
+    font-size: 0.98rem;
+}
+
+.RouteNameBlock span,
+.RouteDate {
+    color: #64748b;
+    font-size: 0.9rem;
+}
+
+.Pill,
+.Pill--soft {
+    display: inline-flex;
+    align-items: center;
+    min-height: 32px;
+    padding: 0 12px;
+    border-radius: 999px;
+    font-size: 0.84rem;
+    font-weight: 700;
+}
+
+.Pill {
+    background: rgba(15, 23, 42, 0.08);
+    color: #0f172a;
+}
+
+.Pill--soft {
+    background: rgba(37, 99, 235, 0.08);
+    color: #1d4ed8;
+}
+
+.BadgePaquetes {
+    display: inline-flex;
+    align-items: center;
+    min-width: 42px;
+    justify-content: center;
+    min-height: 32px;
+    padding: 0 12px;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #10b981, #0ea5e9);
+    color: #fff;
+    font-weight: 800;
+    font-size: 0.9rem;
+}
+
+.RouteActions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.BtnAction {
+    border: 0;
+    min-height: 38px;
+    padding: 0 14px;
+    border-radius: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.2s ease, opacity 0.2s ease, box-shadow 0.2s ease;
+}
+
+.BtnAction--view {
+    background: #0f172a;
+    color: #fff;
+}
+
+.BtnAction--download {
+    background: rgba(15, 23, 42, 0.08);
+    color: #0f172a;
+}
+
+.BtnAction:hover {
+    box-shadow: 0 14px 24px rgba(15, 23, 42, 0.12);
+}
+
+.EmptyState {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    padding: 56px 20px 40px;
+    text-align: center;
+}
+
+.EmptyState__icon {
+    width: 72px;
+    height: 72px;
+    display: grid;
+    place-items: center;
+    border-radius: 22px;
+    background: linear-gradient(135deg, rgba(37, 99, 235, 0.14), rgba(16, 185, 129, 0.14));
+    color: #1d4ed8;
+    font-size: 1.7rem;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+.EmptyState h3 {
+    margin: 0;
+    font-size: 1.4rem;
+    color: #08101f;
+}
+
+.EmptyState p {
+    max-width: 58ch;
+    margin: 0;
+    color: #64748b;
+    line-height: 1.65;
+}
+
+.Modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    padding: 20px;
+    background: rgba(2, 6, 23, 0.62);
+    backdrop-filter: blur(14px);
+}
+
+.Modal.mostrar {
+    display: grid;
+    place-items: center;
+}
+
+.ModalContenido {
+    width: min(1120px, 100%);
+    max-height: 92vh;
+    overflow: hidden;
+    border-radius: 26px;
+    background: linear-gradient(180deg, #ffffff, #f8fafc);
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    box-shadow: 0 40px 80px rgba(2, 6, 23, 0.28);
+}
+
+.ModalHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 22px 24px;
+    background: linear-gradient(135deg, #0f172a, #1d4ed8);
+    color: #fff;
+}
+
+.ModalHeader h2 {
+    margin: 6px 0 0;
+    font-size: 1.45rem;
+}
+
+.BtnCerrar {
+    width: 42px;
+    height: 42px;
+    border: 0;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.12);
+    color: #fff;
+    font-size: 1.5rem;
+    line-height: 1;
+    cursor: pointer;
+    transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.BtnCerrar:hover {
+    transform: scale(1.04);
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.ModalBody {
+    padding: 22px 24px 24px;
+    overflow: auto;
+    max-height: calc(92vh - 88px);
+}
+
+.DetallesRutaInfo {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+    margin-bottom: 18px;
+}
+
+.DetallesRutaInfo p {
+    margin: 0;
+    padding: 14px 16px;
+    border-radius: 18px;
+    background: #fff;
+    border: 1px solid rgba(148, 163, 184, 0.18);
+    color: #0f172a;
+    box-shadow: 0 10px 22px rgba(15, 23, 42, 0.05);
+}
+
+.DetallesRutaInfo strong {
+    display: block;
+    margin-bottom: 6px;
+    color: #64748b;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.TablaDetalles {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.TablaDetalles__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+}
+
+.TablaDetalles h3 {
+    margin: 0;
+    color: #08101f;
+    font-size: 1.1rem;
+}
+
+.TablaDetalles table {
+    width: 100%;
+    min-width: 840px;
+    border-collapse: collapse;
+    background: #fff;
+}
+
+.TablaDetalles thead {
+    background: #0f172a;
+    color: #fff;
+}
+
+.TablaDetalles th,
+.TablaDetalles td {
+    padding: 14px 16px;
+    text-align: left;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.14);
+    font-size: 0.93rem;
+}
+
+.TablaDetalles tbody tr:hover {
+    background: #f8fbff;
+}
+
+.TablaDetalles tbody td {
+    color: #334155;
+}
+
+.TablaDetalles tbody td:first-child {
+    font-weight: 800;
+    color: #0f172a;
+}
+
+@media (max-width: 1080px) {
+    .RutasHero {
+        grid-template-columns: 1fr;
+    }
+
+    .RutasMetrics {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .FilterForm {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .FilterActions {
+        grid-column: 1 / -1;
+    }
+
+    .DetallesRutaInfo {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 760px) {
+    .RutasDashboard {
+        gap: 18px;
+    }
+
+    .RutasHero,
+    .FilterCard,
+    .TableCard {
+        padding: 18px;
+        border-radius: 20px;
+    }
+
+    .RutasMetrics {
+        grid-template-columns: 1fr;
+    }
+
+    .FilterForm {
+        grid-template-columns: 1fr;
+    }
+
+    .FilterActions {
+        width: 100%;
+    }
+
+    .BtnPrimary,
+    .BtnSecondary,
+    .BtnGhost,
+    .FilterCard__clear {
+        width: 100%;
+    }
+
+    .FilterCard__header,
+    .TableCard__header,
+    .TablaDetalles__header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .DetallesRutaInfo {
+        grid-template-columns: 1fr;
+    }
+
+    .Modal {
+        padding: 12px;
+    }
+}
+
+@media (max-width: 520px) {
+    .RutasHero h1 {
+        font-size: 2rem;
+    }
+
+    .ModalHeader,
+    .ModalBody {
+        padding-left: 16px;
+        padding-right: 16px;
+    }
+
+    .BtnAction {
+        width: 100%;
+    }
+}

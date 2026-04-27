@@ -1,0 +1,338 @@
+.ContenedorRutas {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    padding: 20px;
+    background-color: #f8f9fa;
+    border-radius: 10px;
+}
+
+/* Configuración de Ruta */
+.ConfiguracionRuta {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border-left: 4px solid #000000;
+}
+
+.ConfiguracionRuta h3 {
+    margin-top: 0;
+    color: #000000;
+    font-size: 18px;
+    margin-bottom: 15px;
+}
+
+.FormGroup {
+    margin-bottom: 15px;
+}
+
+.FormGroup label {
+    display: block;
+    margin-bottom: 5px;
+    color: #374151;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.FormGroup input,
+.FormGroup select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #d1d5db;
+    border-radius: 5px;
+    font-size: 14px;
+    font-family: inherit;
+    transition: border-color 0.3s;
+}
+
+.FormGroup input:focus,
+.FormGroup select:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.FormGroup select:disabled {
+    background-color: #f3f4f6;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+/* Sección de Escaneo */
+.SeccionEscaneo {
+    background: #000000;
+    padding: 25px;
+    border-radius: 8px;
+    color: white;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.SeccionEscaneo h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 18px;
+}
+
+.InputEscaneo {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.InputEscaneo label {
+    font-weight: 600;
+    font-size: 15px;
+}
+
+.InputEscaneo input {
+    padding: 12px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    font-family: 'Courier New', monospace;
+    transition: all 0.3s;
+}
+
+.InputEscaneo input:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.3);
+    transform: scale(1.02);
+}
+
+.InputEscaneo small {
+    font-size: 12px;
+    opacity: 0.9;
+    font-style: italic;
+}
+
+/* Sección de Lista */
+.SeccionLista {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.SeccionLista h3 {
+    margin-top: 0;
+    color: #1f2937;
+    font-size: 18px;
+    margin-bottom: 15px;
+}
+
+/* Lista de Paquetes */
+.ListaPaquetes {
+    background-color: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    max-height: 400px;
+    overflow-y: auto;
+    margin-bottom: 15px;
+}
+
+.ListaPaquetes .mensaje-vacio {
+    text-align: center;
+    color: #9ca3af;
+    padding: 30px 20px;
+    font-style: italic;
+}
+
+.ItemPaquete {
+    padding: 12px;
+    border-bottom: 1px solid #e5e7eb;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: background-color 0.2s;
+}
+
+.ItemPaquete:last-child {
+    border-bottom: none;
+}
+
+.ItemPaquete:hover {
+    background-color: #f3f4f6;
+}
+
+.InfoPaquete {
+    flex: 1;
+}
+
+.NumeroPaquete {
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    background-color: #000000;
+    color: white;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 24px;
+    font-weight: bold;
+    font-size: 12px;
+    margin-right: 10px;
+}
+
+.DatosPaquete {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+.CodigoBarras {
+    background-color: #eff6ff;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-family: 'Courier New', monospace;
+    font-weight: 600;
+    color: #1e40af;
+    font-size: 13px;
+}
+
+.NombreCliente {
+    color: #1f2937;
+    font-weight: 500;
+}
+
+.BtnRemover {
+    background-color: #ef4444;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: background-color 0.2s;
+}
+
+.BtnRemover:hover {
+    background-color: #dc2626;
+}
+
+/* Botones de Acción */
+.BotonesAccion {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+.btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.btn-danger {
+    background-color: #ef4444;
+    color: white;
+}
+
+.btn-danger:hover:not(:disabled) {
+    background-color: #dc2626;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+.btn-success {
+    background-color: #000000;
+    color: white;
+    border: 1px solid #000000;
+}
+
+.btn-success:hover:not(:disabled) {
+    background-color: #333333;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Alertas */
+.Alerta {
+    padding: 12px;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    animation: slideIn 0.3s ease-out;
+}
+
+.Alerta.exito {
+    background-color: #dcfce7;
+    color: #166534;
+    border: 1px solid #86efac;
+}
+
+.Alerta.error {
+    background-color: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #fca5a5;
+}
+
+.Alerta.advertencia {
+    background-color: #fef3c7;
+    color: #92400e;
+    border: 1px solid #fcd34d;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(-20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Scroll personalizado */
+.ListaPaquetes::-webkit-scrollbar {
+    width: 8px;
+}
+
+.ListaPaquetes::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 4px;
+}
+
+.ListaPaquetes::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+}
+
+.ListaPaquetes::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .ContenedorRutas {
+        padding: 10px;
+        gap: 20px;
+    }
+
+    .ConfiguracionRuta,
+    .SeccionEscaneo,
+    .SeccionLista {
+        padding: 15px;
+    }
+
+    .DatosPaquete {
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .BotonesAccion {
+        flex-direction: column;
+    }
+
+    .btn {
+        width: 100%;
+    }
+}

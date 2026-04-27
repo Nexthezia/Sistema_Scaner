@@ -1,53 +1,82 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Registrar Paquete</title>
-</head>
-<body>
+{% extends "layout.html" %}
 
-<h2>Registrar Paquete</h2>
+{% block head %} 
+    {# This matches the block name in your layout.html #}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/RegistrarPaquetes.css') }}">
+{% endblock %}
 
-<form method="POST" action="{{ url_for('paquetes.guardar_paquete') }}">
+{% block content %}
 
-    <input name="nombre_cliente" placeholder="Cliente" required><br><br>
 
-    <input name="nombre_vendedor" placeholder="Vendedor"><br><br>
+<div class="Titulos">
+    <span>
+        {{ title_web }}
+        
+    </span>
+    <div class="hr"></div>
+</div>
 
-    <input name="telefono" placeholder="Teléfono"><br><br>
 
-    <input name="email" placeholder="Email"><br><br>
+<div class="RegistrarPaquetes">
+    
+    <form method="POST" action="{{ url_for('paquetes.guardar_paquete') }}">
+    
+        <div class="Datos">
+            <div class="Inputs">
+                <span class="Titulos_pequeños">Nombre del cliente</span>
+                <input name="nombre_cliente" placeholder="Cliente" required>
+            </div>
+            
+            <div class="Inputs">
+                <span class="Titulos_pequeños">Nombre del vendedor</span>
+                <input name="nombre_vendedor" placeholder="Vendedor" required>
+            </div>
+
+            <div class="Inputs">
+                <span class="Titulos_pequeños"  >Teléfono</span>
+                <input type="tel" id="telefono" name="telefono" placeholder="Teléfono">
+            </div>
+
+            <div class="Inputs">
+                <span class="Titulos_pequeños">Email</span>
+                <input name="email" placeholder="Email">
+            </div>
+        </div>
 
     <hr>
 
     <label>Departamento</label><br>
-    <select id="departamento" name="id_departamento"></select><br><br>
+    <select id="departamento" name="id_departamento"></select>
 
     <label>Municipio</label><br>
-    <select id="municipio" name="id_municipio"></select><br><br>
+    <select id="municipio" name="id_municipio"></select>
 
     <label>Tienda</label><br>
-    <select id="tienda" name="id_tienda"></select><br><br>
+    <select id="tienda" name="id_tienda"></select>
 
     <hr>
 
+    <div class="SeccionPrecios">
+        <label>Valor del paquete:</label>
+        <input type="number" step="0.01" name="precio" placeholder="Precio">
+        
+        <label>Costo de envío</label>
+        <input name="envio" placeholder="Envío">
 
-    <label>Valor del paquete:</label>
-    <input type="number" step="0.01" name="precio" placeholder="Precio"><br><br>
-    
-    <label>Costo de envio</label>
-    <input name="envio" placeholder="Envío"><br><br>
-
-
-    <lable>comision de vendedor</lable>
-    <input name="comision" placeholder="Comisión"><br><br>
+        <label>Comisión de vendedor</label>
+        <input name="comision" placeholder="Comisión">
+    </div>
 
     <label>Guardar paquete</label>
     <button type="submit">Guardar</button>
 
 </form>
+</div>
+
+
 
 <script>
+
 document.addEventListener("DOMContentLoaded", function () {
 
     const dep = document.getElementById("departamento");
@@ -93,5 +122,25 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 </script>
 
-</body>
-</html>
+<!--
+    Ajuste teleofo
+-->
+
+    <script>
+    const input = document.getElementById('telefono');
+
+    input.addEventListener('input', (e) => {
+        // Quitamos todo lo que no sea número para limpiar
+        let v = e.target.value.replace(/\D/g, '');
+        
+        // Si ya escribió 5 números o más, insertamos el guion visual
+        if (v.length > 4) {
+            e.target.value = v.slice(0, 4) + '-' + v.slice(4, 8);
+        } else {
+            e.target.value = v;
+        }
+    });
+</script>
+
+{% endblock %}
+

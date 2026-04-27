@@ -1,0 +1,192 @@
+/* Menú de Navegación */
+.MenuNavegacion {
+    background: #ffffff;
+    padding: 0;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+    border-bottom: 2px solid #000000;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.MenuContenedor {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 70px;
+}
+
+.Logo {
+    flex: 0 0 auto;
+}
+
+.Logo a {
+    color: #000000;
+    font-size: 24px;
+    font-weight: 700;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: transform 0.3s ease;
+}
+
+.Logo a:hover {
+    transform: scale(1.05);
+}
+
+/* Links del Menú */
+.MenuLinks {
+    list-style: none;
+    display: flex;
+    gap: 30px;
+    margin: 0;
+    padding: 0;
+    align-items: center;
+}
+
+.MenuLinks .link-menu {
+    color: #000000;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 15px;
+    padding: 8px 15px;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.MenuLinks .link-menu:hover {
+    background-color: #f0f0f0;
+    transform: translateY(-2px);
+}
+
+.MenuLinks .link-menu::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background-color: #000000;
+    transition: width 0.3s ease;
+}
+
+.MenuLinks .link-menu:hover::after {
+    width: 100%;
+}
+
+/* Botón Menu Mobile */
+.BtnMenuMobile {
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 10px;
+}
+
+.BtnMenuMobile span {
+    width: 25px;
+    height: 3px;
+    background-color: #000000;
+    border-radius: 2px;
+    transition: all 0.3s ease;
+}
+
+.BtnMenuMobile.activo span:nth-child(1) {
+    transform: rotate(45deg) translate(10px, 10px);
+}
+
+.BtnMenuMobile.activo span:nth-child(2) {
+    opacity: 0;
+}
+
+.BtnMenuMobile.activo span:nth-child(3) {
+    transform: rotate(-45deg) translate(7px, -7px);
+}
+
+/* Contenido Principal */
+.ContenidoPrincipal {
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 0 20px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .MenuContenedor {
+        height: 60px;
+    }
+
+    .Logo a {
+        font-size: 20px;
+        gap: 8px;
+    }
+
+    .BtnMenuMobile {
+        display: flex;
+    }
+
+    .MenuLinks {
+        position: absolute;
+        top: 60px;
+        left: 0;
+        right: 0;
+        flex-direction: column;
+        gap: 0;
+        background: #ffffff;
+        border-bottom: 2px solid #000000;
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease;
+    }
+
+    .MenuLinks.mostrar {
+        max-height: 300px;
+    }
+
+    .MenuLinks li {
+        width: 100%;
+    }
+
+    .MenuLinks .link-menu {
+        display: block;
+        padding: 15px 20px;
+        border-radius: 0;
+        border-bottom: 1px solid #e0e0e0;
+    }
+
+    .MenuLinks .link-menu::after {
+        display: none;
+    }
+
+    .MenuLinks .link-menu:hover {
+        background-color: #f0f0f0;
+        transform: none;
+    }
+
+    .ContenidoPrincipal {
+        margin: 10px auto;
+        padding: 0 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .MenuContenedor {
+        padding: 0 15px;
+    }
+
+    .Logo a {
+        font-size: 18px;
+        gap: 6px;
+    }
+
+    .MenuLinks .link-menu {
+        font-size: 14px;
+    }
+}

@@ -1,0 +1,240 @@
+.RegistrarPaquetes{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+
+.RegistrarPaquetes form{
+    display: flex;
+    flex-direction: column;
+    width: 90%;
+    max-width: 600px;
+    margin-top: 20px;
+}
+
+/* Sección de Datos del Cliente */
+.RegistrarPaquetes form .Datos{
+    display:flex;
+    flex-direction: column;
+    border: 2px solid #000000;
+    padding: 20px;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    margin-bottom: 20px;
+}
+
+.RegistrarPaquetes form .Datos span{
+    font-size: 16px;
+    font-weight: bold;
+    margin: 0px 0px 0px 10px;
+    color: #000000;
+}
+
+.RegistrarPaquetes form .Datos input {
+    box-sizing: border-box;
+    padding: 10px 15px;
+    font-size: 15px;
+    margin-top: 5px;
+    margin-bottom: 15px;
+    border: 1px solid #cccccc;
+    border-radius: 5px;
+    width: 100%;
+    outline: none;
+    background-color: #ffffff;
+    color: #000000;
+    font-family: inherit;
+    transition: border-color 0.3s;
+}
+
+.RegistrarPaquetes form .Datos input:focus {
+    border-color: #000000;
+    box-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
+}
+
+.RegistrarPaquetes form .Datos p{
+    font-size: 10px;
+    color: #666666;
+    margin-top: -10px;
+    margin-bottom: 10px;
+}
+
+.RegistrarPaquetes form .Datos .Inputs{
+    display: flex;
+    flex-direction: column;
+    margin-top: 0px;
+}
+
+/* Labels */
+.RegistrarPaquetes form label {
+    font-weight: 600;
+    font-size: 14px;
+    color: #000000;
+    margin-top: 15px;
+    margin-bottom: 8px;
+    display: block;
+}
+
+.RegistrarPaquetes form label:first-of-type {
+    margin-top: 0;
+}
+
+/* Selects */
+.RegistrarPaquetes form select {
+    box-sizing: border-box;
+    padding: 10px 15px;
+    font-size: 15px;
+    border: 1px solid #cccccc;
+    border-radius: 5px;
+    width: 100%;
+    outline: none;
+    background-color: #ffffff;
+    color: #000000;
+    cursor: pointer;
+    font-family: inherit;
+    transition: border-color 0.3s;
+    margin-bottom: 15px;
+}
+
+.RegistrarPaquetes form select:focus {
+    border-color: #000000;
+    box-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
+}
+
+.RegistrarPaquetes form select:hover {
+    border-color: #666666;
+}
+
+/* Divisor horizontal */
+.RegistrarPaquetes form hr {
+    border: none;
+    border-top: 2px solid #000000;
+    margin: 20px 0;
+    opacity: 0.5;
+}
+
+/* Sección de Precios */
+.RegistrarPaquetes form .SeccionPrecios {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #e0e0e0;
+    padding: 20px;
+    border-radius: 8px;
+    background-color: #f5f5f5;
+    margin-top: 15px;
+    margin-bottom: 20px;
+}
+
+.RegistrarPaquetes form .SeccionPrecios label {
+    margin-top: 0;
+}
+
+.RegistrarPaquetes form .SeccionPrecios input {
+    box-sizing: border-box;
+    padding: 10px 15px;
+    font-size: 15px;
+    margin-bottom: 15px;
+    border: 1px solid #cccccc;
+    border-radius: 5px;
+    width: 100%;
+    outline: none;
+    background-color: #ffffff;
+    color: #000000;
+    font-family: inherit;
+    transition: border-color 0.3s;
+}
+
+.RegistrarPaquetes form .SeccionPrecios input:focus {
+    border-color: #000000;
+    box-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
+}
+
+/* Botón */
+.RegistrarPaquetes form button {
+    box-sizing: border-box;
+    padding: 12px 30px;
+    font-size: 16px;
+    font-weight: 600;
+    background-color: #000000;
+    color: #ffffff;
+    border: 2px solid #000000;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s;
+    margin-top: 20px;
+    font-family: inherit;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.RegistrarPaquetes form button:hover {
+    background-color: #333333;
+    border-color: #333333;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    transform: translateY(-2px);
+}
+
+.RegistrarPaquetes form button:active {
+    transform: translateY(0);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .RegistrarPaquetes {
+        padding: 15px;
+    }
+
+    .RegistrarPaquetes form {
+        width: 95%;
+    }
+
+    .RegistrarPaquetes form .Datos {
+        padding: 15px;
+    }
+
+    .RegistrarPaquetes form label {
+        font-size: 13px;
+    }
+
+    .RegistrarPaquetes form input,
+    .RegistrarPaquetes form select {
+        font-size: 14px;
+        padding: 8px 12px;
+    }
+
+    .RegistrarPaquetes form button {
+        font-size: 14px;
+        padding: 10px 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .RegistrarPaquetes form {
+        width: 100%;
+    }
+
+    .RegistrarPaquetes form .Datos {
+        padding: 12px;
+    }
+
+    .RegistrarPaquetes form label {
+        font-size: 12px;
+        margin-top: 10px;
+    }
+
+    .RegistrarPaquetes form input,
+    .RegistrarPaquetes form select {
+        font-size: 13px;
+        padding: 8px 10px;
+        margin-bottom: 12px;
+    }
+
+    .RegistrarPaquetes form button {
+        font-size: 13px;
+        padding: 10px 15px;
+    }
+}

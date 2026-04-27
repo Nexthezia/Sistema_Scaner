@@ -1,0 +1,53 @@
+{% extends "layout.html" %}
+
+{% block head %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/Inicio.css') }}">
+{% endblock %}
+
+{% block content %}
+
+<div class="Inicio">
+    <div class="Banner">
+        <h1>📦 ScanLogix</h1>
+        <p>Sistema de Gestión de Paquetes y Rutas</p>
+    </div>
+
+    <div class="GridOpciones">
+        <div class="TarjetaOpcion">
+            <div class="Icono">📝</div>
+            <h2>Registrar Paquete</h2>
+            <p>Agrega nuevos paquetes al sistema con todos los detalles del cliente y ubicación.</p>
+            <a href="{{ url_for('paquetes.nuevo_paquete') }}" class="BtnAcceso">Ir a Registrar</a>
+        </div>
+
+        <div class="TarjetaOpcion">
+            <div class="Icono">🗺️</div>
+            <h2>Gestionar Rutas</h2>
+            <p>Crea rutas de entrega escaneando códigos de barra y organizando paquetes por destino.</p>
+            <a href="{{ url_for('rutas.gestionar_rutas') }}" class="BtnAcceso">Ir a Rutas</a>
+        </div>
+    </div>
+
+    <div class="SeccionInfo">
+        <h3>¿Cómo funciona?</h3>
+        <div class="PasosInfo">
+            <div class="Paso">
+                <div class="NumPaso">1</div>
+                <h4>Registra Paquetes</h4>
+                <p>Ingresa los datos del cliente y la ubicación de entrega</p>
+            </div>
+            <div class="Paso">
+                <div class="NumPaso">2</div>
+                <h4>Escanea Códigos</h4>
+                <p>Usa la pistola para escanear los códigos de barra</p>
+            </div>
+            <div class="Paso">
+                <div class="NumPaso">3</div>
+                <h4>Organiza Rutas</h4>
+                <p>Crea rutas por departamento y tienda</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

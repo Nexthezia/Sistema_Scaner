@@ -1,0 +1,207 @@
+{% extends "layout.html" %}
+
+{% block head %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/VerRutas.css') }}">
+{% endblock %}
+
+{% block content %}
+
+<div class="RutasDashboard">
+    <section class="RutasHero">
+        <div class="RutasHero__copy">
+            <p class="RutasEyebrow">Centro de control</p>
+            <h1>Rutas creadas</h1>
+            <p class="RutasHero__text">
+                Visualiza, filtra y revisa las rutas por departamento y tienda con una vista más limpia, rápida y moderna.
+            </p>
+
+            <div class="RutasHero__actions">
+                <a href="{{ url_for('rutas.gestionar_rutas') }}" class="BtnPrimary">Crear ruta</a>
+                <a href="#tabla-rutas" class="BtnSecondary">Ir a la tabla</a>
+            </div>
+        </div>
+
+        <div class="RutasMetrics">
+            <article class="MetricCard">
+                <span class="MetricCard__label">Rutas visibles</span>
+                <strong class="MetricCard__value">{{ total_rutas }}</strong>
+            </article>
+            <article class="MetricCard">
+                <span class="MetricCard__label">Paquetes listados</span>
+                <strong class="MetricCard__value">{{ total_paquetes }}</strong>
+            </article>
+            <article class="MetricCard MetricCard--accent">
+                <span class="MetricCard__label">Filtro activo</span>
+                <strong class="MetricCard__value">
+                    {% if filtro_departamento or filtro_tienda %}
+                        Sí
+                    {% else %}
+                        No
+                    {% endif %}
+                </strong>
+            </article>
+        </div>
+    </section>
+
+    <section class="FilterCard">
+        <div class="FilterCard__header">
+            <div>
+                <p class="SectionLabel">Filtros</p>
+                <h2>Refina el listado</h2>
+            </div>
+            <a href="{{ url_for('rutas.ver_rutas') }}" class="FilterCard__clear">Limpiar filtros</a>
+        </div>
+
+        <form method="GET" action="{{ url_for('rutas.ver_rutas') }}" class="FilterForm" id="filterForm">
+            <div class="FormField">
+                <label for="filtroDepartamento">Departamento</label>
+                <select
+                    name="departamento"
+                    id="filtroDepartamento"
+                    data-selected="{{ filtro_departamento or '' }}"
+                >
+                    <option value="">Todos los departamentos</option>
+                    {% for dept in departamentos %}
+                        <option value="{{ dept.id_departamento }}" {% if filtro_departamento == dept.id_departamento %}selected{% endif %}>
+                            {{ dept.nombre }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="FormField">
+                <label for="filtroTienda">Tienda</label>
+                <select
+                    name="tienda"
+                    id="filtroTienda"
+                    data-selected="{{ filtro_tienda or '' }}"
+                    {% if not filtro_departamento %}disabled{% endif %}
+                >
+                    <option value="">Todas las tiendas</option>
+                    {% for tienda in tiendas %}
+                        <option value="{{ tienda.id_tienda }}" {% if filtro_tienda == tienda.id_tienda %}selected{% endif %}>
+                            {{ tienda.nombre }}
+                        </option>
+                    {% endfor %}
+                </select>
+                <small>La lista de tiendas se ajusta al departamento elegido.</small>
+            </div>
+
+            <div class="FilterActions">
+                <button type="submit" class="BtnPrimary BtnPrimary--submit">Aplicar filtros</button>
+                <a href="{{ url_for('rutas.ver_rutas') }}" class="BtnGhost">Mostrar todo</a>
+            </div>
+        </form>
+    </section>
+
+    <section class="TableCard" id="tabla-rutas">
+        <div class="TableCard__header">
+            <div>
+                <p class="SectionLabel">Listado</p>
+                <h2>Rutas registradas</h2>
+            </div>
+            <span class="TableCard__badge">{{ total_rutas }} resultados</span>
+        </div>
+
+        {% if rutas %}
+            <div class="RoutesTableWrap">
+                <table class="RoutesTable">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Ruta</th>
+                            <th>Departamento</th>
+                            <th>Tienda</th>
+                            <th>Paquetes</th>
+                            <th>Creación</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for ruta in rutas %}
+                            <tr class="RouteRow" data-id="{{ ruta.id_ruta }}">
+                                <td class="RouteId">{{ ruta.id_ruta }}</td>
+                                <td>
+                                    <div class="RouteNameBlock">
+                                        <strong>{{ ruta.nombre_ruta }}</strong>
+                                        <span>Ruta logística</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="Pill Pill--soft">{{ ruta.departamento or 'Sin departamento' }}</span>
+                                </td>
+                                <td>
+                                    <span class="Pill">{{ ruta.tienda or 'Sin tienda' }}</span>
+                                </td>
+                                <td>
+                                    <span class="BadgePaquetes">{{ ruta.cantidad_paquetes }}</span>
+                                </td>
+                                <td class="RouteDate">
+                                    {{ ruta.fecha_creacion.strftime('%d/%m/%Y %H:%M') if ruta.fecha_creacion else 'Sin fecha' }}
+                                </td>
+                                <td class="RouteActions">
+                                    <button type="button" class="BtnAction BtnAction--view" onclick="verDetalles({{ ruta.id_ruta }})">
+                                        Ver
+                                    </button>
+                                    <button type="button" class="BtnAction BtnAction--download" onclick="descargarRuta({{ ruta.id_ruta }})">
+                                        Descargar
+                                    </button>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="EmptyState">
+                <div class="EmptyState__icon">✦</div>
+                <h3>No hay rutas para mostrar</h3>
+                <p>Prueba quitando los filtros o crea una nueva ruta para empezar a registrar movimientos.</p>
+                <a href="{{ url_for('rutas.gestionar_rutas') }}" class="BtnPrimary">Crear primera ruta</a>
+            </div>
+        {% endif %}
+    </section>
+</div>
+
+<div id="modalDetalles" class="Modal" aria-hidden="true">
+    <div class="ModalContenido" role="dialog" aria-modal="true" aria-labelledby="modalTitulo">
+        <div class="ModalHeader">
+            <div>
+                <p class="SectionLabel SectionLabel--light">Detalle de ruta</p>
+                <h2 id="modalTitulo">Detalles de la ruta</h2>
+            </div>
+            <button class="BtnCerrar" type="button" onclick="cerrarModal()" aria-label="Cerrar">&times;</button>
+        </div>
+
+        <div class="ModalBody">
+            <div id="detallesRuta" class="DetallesRutaInfo"></div>
+
+            <div id="tablaPaquetes" class="TablaDetalles">
+                <div class="TablaDetalles__header">
+                    <h3>Paquetes en la ruta</h3>
+                    <span id="cantidadPaquetesModal" class="TableCard__badge"></span>
+                </div>
+                <div class="RoutesTableWrap RoutesTableWrap--modal">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Código barras</th>
+                                <th>Cliente</th>
+                                <th>Teléfono</th>
+                                <th>Email</th>
+                                <th>Precio</th>
+                            </tr>
+                        </thead>
+                        <tbody id="cuerpoPaquetes">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/ver_rutas.js') }}"></script>
+
+{% endblock %}

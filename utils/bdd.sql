@@ -43,3 +43,23 @@ CREATE TABLE paquetes (
     FOREIGN KEY (id_tienda) REFERENCES tiendas(id_tienda)
 );
 
+CREATE TABLE rutas (
+    id_ruta INT AUTO_INCREMENT PRIMARY KEY,
+    nombre_ruta VARCHAR(150) NOT NULL,
+    id_departamento INT NOT NULL,
+    id_tienda INT NOT NULL,
+    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (id_departamento) REFERENCES departamentos(id_departamento),
+    FOREIGN KEY (id_tienda) REFERENCES tiendas(id_tienda)
+);
+
+CREATE TABLE detalle_ruta (
+    id_detalle INT AUTO_INCREMENT PRIMARY KEY,
+    id_ruta INT NOT NULL,
+    id_paquete INT NOT NULL,
+    posicion INT NOT NULL,
+    fecha_agregado TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (id_ruta) REFERENCES rutas(id_ruta),
+    FOREIGN KEY (id_paquete) REFERENCES paquetes(id_paquete)
+);
+

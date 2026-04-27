@@ -7,7 +7,7 @@ paquetes_bp = Blueprint("paquetes", __name__, url_prefix="/paquetes")
 
 @paquetes_bp.route("/nuevo", methods=["GET"])
 def nuevo_paquete():
-    return render_template("registrar_paquete.html")
+    return render_template("registrar_paquete.html", title_web="REGISTRAR PAQUETE")
 
 @paquetes_bp.route("/guardar", methods=["POST"])
 def guardar_paquete():
