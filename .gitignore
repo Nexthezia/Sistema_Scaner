@@ -219,7 +219,5 @@ __marimo__/
 
 
 
-
-
 # Para que no estemos cambiando nada de esto.
 ./config/config.py

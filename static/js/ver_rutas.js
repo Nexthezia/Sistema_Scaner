@@ -1,8 +1,3 @@
-let rutaModal = null;
-let detalleRuta = null;
-let cuerpoPaquetes = null;
-let modalTitulo = null;
-let cantidadPaquetesModal = null;
 
 function escapeCsv(value) {
     const text = String(value ?? "");
