@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, jsonify, make_response, redirect, url_for
+from flask import Blueprint, render_template, request, jsonify, make_response
 from models.db import get_connection
 from routes.ubicaciones import get_departamentos
 import io
@@ -9,7 +9,12 @@ rutas_bp = Blueprint("rutas", __name__, url_prefix="/rutas")
 
 @rutas_bp.route("/", methods=["GET"])
 def gestionar_rutas():
-    return redirect(url_for(".ver_rutas"))
+    departamentos = get_departamentos()
+    return render_template(
+        "gestionar_rutas.html",
+        title_web="GESTIONAR RUTAS",
+        departamentos=departamentos,
+    )
 
 
 @rutas_bp.route("/editar/<int:id_ruta>", methods=["GET"])
@@ -27,7 +32,6 @@ def editar_ruta_view(id_ruta):
 @rutas_bp.route("/ver", methods=["GET"])
 def ver_rutas():
     """Página para ver rutas creadas con filtros por departamento y tienda."""
-    departamentos = []
     try:
         id_departamento = request.args.get("departamento", type=int)
         id_tienda = request.args.get("tienda", type=int)
@@ -124,7 +128,7 @@ def ver_rutas():
             "ver_rutas.html",
             title_web="VER RUTAS",
             rutas=[],
-            departamentos=departamentos, # Usamos la lista que ya tenemos (puede estar vacía si falló antes)
+            departamentos=get_departamentos(),
             tiendas=[],
             filtro_departamento=None,
             filtro_tienda=None,
