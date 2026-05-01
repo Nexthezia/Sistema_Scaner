@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 
 {% block head %}
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/GestionarRutas.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/GestionarRutas.css') }}">
 {% endblock %}
 
 {% block content %}
@@ -12,11 +12,11 @@
 </div>
 
 <div class="ContenedorRutas">
-    
+
     <!-- Sección de Configuración de Ruta -->
     <div class="ConfiguracionRuta">
         <h3>Configurar Nueva Ruta</h3>
-        
+
         <div class="FormGroup">
             <label>Nombre de la Ruta</label>
             <input type="text" id="nombreRuta" placeholder="Ej: Ruta A - Centro" required>
@@ -27,7 +27,7 @@
             <select id="departamento" required>
                 <option value="">Seleccionar departamento...</option>
                 {% for dept in departamentos %}
-                    <option value="{{ dept.id_departamento }}">{{ dept.nombre }}</option>
+                <option value="{{ dept.id_departamento }}">{{ dept.nombre }}</option>
                 {% endfor %}
             </select>
         </div>
@@ -53,7 +53,7 @@
     <!-- Sección de Lista de Rutas -->
     <div class="SeccionLista">
         <h3>Paquetes en Ruta (<span id="contadorPaquetes">0</span>)</h3>
-        
+
         <div class="ListaPaquetes" id="listaPaquetes">
             <p class="mensaje-vacio">No hay paquetes agregados aún</p>
         </div>
@@ -61,6 +61,7 @@
         <div class="BotonesAccion">
             <button id="btnLimpiar" class="btn btn-danger">Limpiar Todo</button>
             <button id="btnGuardar" class="btn btn-success" disabled>Guardar Ruta</button>
+            <a href="{{ url_for('rutas.ver_rutas') }}" class="btn btn-secondary">Ver Rutas</a>
         </div>
     </div>
 

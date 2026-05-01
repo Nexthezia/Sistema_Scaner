@@ -22,7 +22,7 @@ function formatearMoneda(valor) {
     const numero = Number(valor || 0);
     return new Intl.NumberFormat("es-GT", {
         style: "currency",
-        currency: "GTQ",
+        currency: "USD",
         minimumFractionDigits: 2,
     }).format(numero);
 }
@@ -114,7 +114,7 @@ async function descargarRuta(idRuta) {
                 paquete.nombre_cliente,
                 paquete.telefono || "",
                 paquete.email || "",
-                paquete.precio || "",
+                paquete.precio || "$",
             ]),
         ];
 
@@ -180,6 +180,9 @@ async function imprimirRuta(idRuta) {
                         <tr>
                             <th>#</th>
                             <th>Código de Barras</th>
+                            <th>Departamento</th>
+                            <th>Municipio</th>
+                            <th>Tienda</th>
                             <th>Cliente</th>
                             <th>Teléfono</th>
                             <th>Precio</th>

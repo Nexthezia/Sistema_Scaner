@@ -1,7 +1,7 @@
 # config.py
 
 
-"""
+
 #Ezxquiel database
 
 DB_CONFIG = {
@@ -12,8 +12,9 @@ DB_CONFIG = {
     "port": 3306,
     "cursorclass": "DictCursor"
 }
-"""
 
+
+"""
 #Jairo database
 DB_CONFIG = {
     "host": "localhost",
@@ -24,3 +25,4 @@ DB_CONFIG = {
     "cursorclass": "DictCursor"
 }
 
+"""

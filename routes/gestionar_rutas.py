@@ -4,146 +4,152 @@ from routes.ubicaciones import get_departamentos
 
 rutas_bp = Blueprint("rutas", __name__, url_prefix="/rutas")
 
+# ─────────────────────────────────────────────
+#  Helpers
+# ─────────────────────────────────────────────
+
+def get_tiendas_por_depto(id_departamento: int) -> list:
+    """Devuelve las tiendas que pertenecen a un departamento."""
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute(
+        """
+        SELECT DISTINCT t.id_tienda, t.nombre
+        FROM   tiendas t
+        INNER JOIN municipios m ON t.id_municipio = m.id_municipio
+        WHERE  m.id_departamento = %s
+        ORDER  BY t.nombre
+        """,
+        (id_departamento,),
+    )
+    tiendas = cursor.fetchall()
+    conn.close()
+    return tiendas
+
+
+def _build_rutas_query(id_departamento: int | None, id_tienda: int | None) -> tuple[str, list]:
+    """Construye la cláusula WHERE y los parámetros para la consulta de rutas."""
+    filtros, params = [], []
+    if id_departamento:
+        filtros.append("r.id_departamento = %s")
+        params.append(id_departamento)
+    if id_tienda:
+        filtros.append("r.id_tienda = %s")
+        params.append(id_tienda)
+    where = ("WHERE " + " AND ".join(filtros)) if filtros else ""
+    return where, params
+
+
+def _get_departamento_de_tienda(cursor, id_tienda: int) -> int | None:
+    """Obtiene el id_departamento al que pertenece una tienda."""
+    cursor.execute(
+        """
+        SELECT m.id_departamento
+        FROM   tiendas t
+        INNER  JOIN municipios m ON t.id_municipio = m.id_municipio
+        WHERE  t.id_tienda = %s
+        """,
+        (id_tienda,),
+    )
+    row = cursor.fetchone()
+    return row["id_departamento"] if row else None
+
+
+# ─────────────────────────────────────────────
+#  Páginas
+# ─────────────────────────────────────────────
 
 @rutas_bp.route("/", methods=["GET"])
 def gestionar_rutas():
-    departamentos = get_departamentos()
     return render_template(
         "gestionar_rutas.html",
         title_web="GESTIONAR RUTAS",
-        departamentos=departamentos,
+        departamentos=get_departamentos(),
     )
 
 
 @rutas_bp.route("/ver", methods=["GET"])
 def ver_rutas():
-    """Página para ver rutas creadas con filtros por departamento y tienda."""
-    try:
-        id_departamento = request.args.get("departamento", type=int)
-        id_tienda = request.args.get("tienda", type=int)
-        departamentos = get_departamentos()
+    """Listado de rutas con filtros opcionales por departamento y tienda."""
+    id_departamento = request.args.get("departamento", type=int)
+    id_tienda = request.args.get("tienda", type=int)
 
+    try:
         conn = get_connection()
         cursor = conn.cursor()
 
-        filtros = []
-        params = []
-
-        if id_departamento:
-            filtros.append("r.id_departamento = %s")
-            params.append(id_departamento)
-
-        if id_tienda:
-            filtros.append("r.id_tienda = %s")
-            params.append(id_tienda)
-
-        where_clause = ""
-        if filtros:
-            where_clause = "WHERE " + " AND ".join(filtros)
-
+        where, params = _build_rutas_query(id_departamento, id_tienda)
         cursor.execute(
             f"""
             SELECT
                 r.id_ruta,
                 r.nombre_ruta,
-                d.nombre AS departamento,
-                t.nombre AS tienda,
+                d.nombre          AS departamento,
+                t.nombre          AS tienda,
                 r.fecha_creacion,
                 COUNT(dr.id_paquete) AS cantidad_paquetes
-            FROM rutas r
-            LEFT JOIN departamentos d ON r.id_departamento = d.id_departamento
-            LEFT JOIN tiendas t ON r.id_tienda = t.id_tienda
-            LEFT JOIN detalle_ruta dr ON r.id_ruta = dr.id_ruta
-            {where_clause}
-            GROUP BY r.id_ruta, r.nombre_ruta, d.nombre, t.nombre, r.fecha_creacion
-            ORDER BY r.fecha_creacion DESC, r.id_ruta DESC
+            FROM   rutas r
+            LEFT   JOIN departamentos d  ON r.id_departamento = d.id_departamento
+            LEFT   JOIN tiendas t        ON r.id_tienda       = t.id_tienda
+            LEFT   JOIN detalle_ruta dr  ON r.id_ruta         = dr.id_ruta
+            {where}
+            GROUP  BY r.id_ruta, r.nombre_ruta, d.nombre, t.nombre, r.fecha_creacion
+            ORDER  BY r.fecha_creacion DESC, r.id_ruta DESC
             """,
             params,
         )
-
         rutas = cursor.fetchall()
 
-        departamento_seleccionado = id_departamento
-        if not departamento_seleccionado and id_tienda:
-            cursor.execute(
-                """
-                SELECT m.id_departamento
-                FROM tiendas t
-                INNER JOIN municipios m ON t.id_municipio = m.id_municipio
-                WHERE t.id_tienda = %s
-                """,
-                (id_tienda,),
-            )
-            tienda_row = cursor.fetchone()
-            if tienda_row:
-                departamento_seleccionado = tienda_row["id_departamento"]
+        # Determinar departamento seleccionado para cargar tiendas en el filtro
+        departamento_seleccionado = id_departamento or (
+            _get_departamento_de_tienda(cursor, id_tienda) if id_tienda else None
+        )
 
-        tiendas = []
-        if departamento_seleccionado:
-            cursor.execute(
-                """
-                SELECT DISTINCT t.id_tienda, t.nombre
-                FROM tiendas t
-                INNER JOIN municipios m ON t.id_municipio = m.id_municipio
-                WHERE m.id_departamento = %s
-                ORDER BY t.nombre
-                """,
-                (departamento_seleccionado,),
-            )
-            tiendas = cursor.fetchall()
-
-        total_rutas = len(rutas)
-        total_paquetes = sum(ruta["cantidad_paquetes"] or 0 for ruta in rutas)
-
+        tiendas = get_tiendas_por_depto(departamento_seleccionado) if departamento_seleccionado else []
         conn.close()
 
-        return render_template(
-            "ver_rutas.html",
-            title_web="VER RUTAS",
-            rutas=rutas,
-            departamentos=departamentos,
-            tiendas=tiendas,
-            filtro_departamento=departamento_seleccionado,
-            filtro_tienda=id_tienda,
-            total_rutas=total_rutas,
-            total_paquetes=total_paquetes,
-        )
-    except Exception as e:
-        print(f"Error: {e}")
-        return render_template(
-            "ver_rutas.html",
-            title_web="VER RUTAS",
-            rutas=[],
-            departamentos=get_departamentos(),
-            tiendas=[],
-            filtro_departamento=None,
-            filtro_tienda=None,
-            total_rutas=0,
-            total_paquetes=0,
-        )
+    except Exception as exc:
+        print(f"[ver_rutas] Error: {exc}")
+        rutas, tiendas, departamento_seleccionado = [], [], None
 
+    return render_template(
+        "ver_rutas.html",
+        title_web="VER RUTAS",
+        rutas=rutas,
+        departamentos=get_departamentos(),
+        tiendas=tiendas,
+        filtro_departamento=departamento_seleccionado,
+        filtro_tienda=id_tienda,
+        total_rutas=len(rutas),
+        total_paquetes=sum(r["cantidad_paquetes"] or 0 for r in rutas),
+    )
+
+
+# ─────────────────────────────────────────────
+#  API JSON
+# ─────────────────────────────────────────────
 
 @rutas_bp.route("/detalles/<int:id_ruta>", methods=["GET"])
-def detalles_ruta(id_ruta):
-    """Obtiene los detalles de una ruta específica."""
+def detalles_ruta(id_ruta: int):
+    """Devuelve la cabecera y el detalle de paquetes de una ruta en JSON."""
     try:
         conn = get_connection()
         cursor = conn.cursor()
 
         cursor.execute(
             """
-            SELECT r.id_ruta, r.nombre_ruta, d.nombre as departamento,
-                   t.nombre as tienda, r.fecha_creacion
-            FROM rutas r
-            LEFT JOIN departamentos d ON r.id_departamento = d.id_departamento
-            LEFT JOIN tiendas t ON r.id_tienda = t.id_tienda
-            WHERE r.id_ruta = %s
+            SELECT r.id_ruta, r.nombre_ruta,
+                   d.nombre AS departamento,
+                   t.nombre AS tienda,
+                   r.fecha_creacion
+            FROM   rutas r
+            LEFT   JOIN departamentos d ON r.id_departamento = d.id_departamento
+            LEFT   JOIN tiendas t       ON r.id_tienda       = t.id_tienda
+            WHERE  r.id_ruta = %s
             """,
             (id_ruta,),
         )
-
         ruta = cursor.fetchone()
-
         if not ruta:
             conn.close()
             return jsonify({"success": False, "error": "Ruta no encontrada"}), 404
@@ -154,186 +160,137 @@ def detalles_ruta(id_ruta):
 
         cursor.execute(
             """
-            SELECT dr.posicion, p.id_paquete, p.codigo_barras, p.nombre_cliente,
+            SELECT dr.posicion,
+                   p.id_paquete, p.codigo_barras, p.nombre_cliente,
                    p.telefono, p.email, p.precio
-            FROM detalle_ruta dr
-            INNER JOIN paquetes p ON dr.id_paquete = p.id_paquete
-            WHERE dr.id_ruta = %s
-            ORDER BY dr.posicion
+            FROM   detalle_ruta dr
+            INNER  JOIN paquetes p ON dr.id_paquete = p.id_paquete
+            WHERE  dr.id_ruta = %s
+            ORDER  BY dr.posicion
             """,
             (id_ruta,),
         )
-
         paquetes = cursor.fetchall()
         conn.close()
 
-        return jsonify(
-            {
-                "success": True,
-                "ruta": ruta,
-                "paquetes": paquetes,
-            }
-        )
-    except Exception as e:
-        return jsonify({"success": False, "error": str(e)}), 500
+        return jsonify({"success": True, "ruta": ruta, "paquetes": paquetes})
+
+    except Exception as exc:
+        return jsonify({"success": False, "error": str(exc)}), 500
 
 
 @rutas_bp.route("/get_tiendas/<int:id_departamento>", methods=["GET"])
-def get_tiendas_por_departamento(id_departamento):
-    """Obtiene todas las tiendas de un departamento."""
+def get_tiendas_por_departamento(id_departamento: int):
+    """Devuelve todas las tiendas de un departamento."""
     try:
-        tiendas = get_tiendas_por_depto(id_departamento)
-        return jsonify({"success": True, "tiendas": tiendas})
-    except Exception as e:
-        return jsonify({"success": False, "error": str(e)}), 500
+        return jsonify({"success": True, "tiendas": get_tiendas_por_depto(id_departamento)})
+    except Exception as exc:
+        return jsonify({"success": False, "error": str(exc)}), 500
 
 
 @rutas_bp.route("/validar_codigo/<string:codigo>", methods=["GET"])
-def validar_codigo_barras(codigo):
-    """Valida si el código de barra existe y obtiene datos del paquete."""
+def validar_codigo_barras(codigo: str):
+    """Valida que un código de barras exista y devuelve los datos básicos del paquete."""
     try:
         conn = get_connection()
         cursor = conn.cursor()
-
         cursor.execute(
-            """
-            SELECT id_paquete, nombre_cliente, codigo_barras
-            FROM paquetes
-            WHERE codigo_barras = %s
-            """,
+            "SELECT id_paquete, nombre_cliente, codigo_barras FROM paquetes WHERE codigo_barras = %s",
             (codigo,),
         )
-
         paquete = cursor.fetchone()
         conn.close()
 
-        if paquete:
-            return jsonify(
-                {
-                    "success": True,
-                    "id_paquete": paquete["id_paquete"],
-                    "nombre_cliente": paquete["nombre_cliente"],
-                    "codigo_barras": paquete["codigo_barras"],
-                }
-            )
+        if not paquete:
+            return jsonify({"success": False, "error": "Código no encontrado"}), 404
 
-        return jsonify({"success": False, "error": "Código no encontrado"}), 404
-    except Exception as e:
-        return jsonify({"success": False, "error": str(e)}), 500
+        return jsonify({
+            "success": True,
+            "id_paquete": paquete["id_paquete"],
+            "nombre_cliente": paquete["nombre_cliente"],
+            "codigo_barras": paquete["codigo_barras"],
+        })
+
+    except Exception as exc:
+        return jsonify({"success": False, "error": str(exc)}), 500
 
 
 @rutas_bp.route("/guardar_ruta", methods=["POST"])
 def guardar_ruta():
-    """Guarda la ruta con todos los paquetes escaneados."""
+    """Crea una nueva ruta con sus paquetes."""
+    data = request.json or {}
+    nombre_ruta   = data.get("nombre_ruta")
+    id_departamento = data.get("id_departamento")
+    id_tienda     = data.get("id_tienda")
+    paquetes      = data.get("paquetes", [])
+
+    if not all([nombre_ruta, id_departamento, id_tienda, paquetes]):
+        return jsonify({"success": False, "error": "Datos incompletos"}), 400
+
     try:
-        data = request.json
-        nombre_ruta = data.get("nombre_ruta")
-        id_departamento = data.get("id_departamento")
-        id_tienda = data.get("id_tienda")
-        paquetes = data.get("paquetes", [])
+        conn = get_connection()
+        cursor = conn.cursor()
 
-        if not nombre_ruta or not id_departamento or not id_tienda or not paquetes:
-            return jsonify({"success": False, "error": "Datos incompletos"}), 400
+        cursor.execute(
+            "INSERT INTO rutas (nombre_ruta, id_departamento, id_tienda) VALUES (%s, %s, %s)",
+            (nombre_ruta, id_departamento, id_tienda),
+        )
+        id_ruta = cursor.lastrowid
 
+        cursor.executemany(
+            "INSERT INTO detalle_ruta (id_ruta, id_paquete, posicion) VALUES (%s, %s, %s)",
+            [(id_ruta, id_paquete, pos) for pos, id_paquete in enumerate(paquetes, 1)],
+        )
+
+        conn.commit()
+        conn.close()
+
+        return jsonify({
+            "success": True,
+            "id_ruta": id_ruta,
+            "mensaje": f"Ruta '{nombre_ruta}' guardada con {len(paquetes)} paquetes",
+        })
+
+    except Exception as exc:
+        return jsonify({"success": False, "error": str(exc)}), 500
+
+
+@rutas_bp.route("/actualizar/<int:id_ruta>", methods=["POST"])
+def actualizar_ruta(id_ruta: int):
+    """Actualiza la cabecera de una ruta y, opcionalmente, reemplaza sus paquetes."""
+    data = request.json or {}
+    nombre_ruta     = data.get("nombre_ruta")
+    id_departamento = data.get("id_departamento")
+    id_tienda       = data.get("id_tienda")
+    paquetes        = data.get("paquetes", [])
+
+    if not all([nombre_ruta, id_departamento, id_tienda]):
+        return jsonify({"success": False, "error": "Datos básicos incompletos"}), 400
+
+    try:
         conn = get_connection()
         cursor = conn.cursor()
 
         cursor.execute(
             """
-            INSERT INTO rutas (nombre_ruta, id_departamento, id_tienda)
-            VALUES (%s, %s, %s)
+            UPDATE rutas
+            SET    nombre_ruta = %s, id_departamento = %s, id_tienda = %s
+            WHERE  id_ruta = %s
             """,
-            (nombre_ruta, id_departamento, id_tienda),
+            (nombre_ruta, id_departamento, id_tienda, id_ruta),
         )
 
-        id_ruta = cursor.lastrowid
-
-        for posicion, id_paquete in enumerate(paquetes, 1):
-            cursor.execute(
-                """
-                INSERT INTO detalle_ruta (id_ruta, id_paquete, posicion)
-                VALUES (%s, %s, %s)
-                """,
-                (id_ruta, id_paquete, posicion),
+        if paquetes:
+            cursor.execute("DELETE FROM detalle_ruta WHERE id_ruta = %s", (id_ruta,))
+            cursor.executemany(
+                "INSERT INTO detalle_ruta (id_ruta, id_paquete, posicion) VALUES (%s, %s, %s)",
+                [(id_ruta, id_paquete, pos) for pos, id_paquete in enumerate(paquetes, 1)],
             )
 
         conn.commit()
         conn.close()
 
-        return jsonify(
-            {
-                "success": True,
-                "id_ruta": id_ruta,
-                "mensaje": f"Ruta '{nombre_ruta}' guardada con {len(paquetes)} paquetes",
-            }
-        )
-    except Exception as e:
-        return jsonify({"success": False, "error": str(e)}), 500
-
-
-@rutas_bp.route("/actualizar/<int:id_ruta>", methods=["POST"])
-def actualizar_ruta(id_ruta):
-    """Actualiza los datos de una ruta y sus paquetes."""
-    try:
-        data = request.json
-        nombre_ruta = data.get("nombre_ruta")
-        id_departamento = data.get("id_departamento")
-        id_tienda = data.get("id_tienda")
-        paquetes = data.get("paquetes", [])
-
-        if not nombre_ruta or not id_departamento or not id_tienda:
-            return jsonify({"success": False, "error": "Datos básicos incompletos"}), 400
-
-        conn = get_connection()
-        cursor = conn.cursor()
-
-        # 1. Actualizar los datos de la cabecera de la ruta
-        cursor.execute(
-            """
-            UPDATE rutas 
-            SET nombre_ruta = %s, id_departamento = %s, id_tienda = %s
-            WHERE id_ruta = %s
-            """,
-            (nombre_ruta, id_departamento, id_tienda, id_ruta)
-        )
-
-        # 2. Si se proveen paquetes, reemplazamos el detalle
-        if paquetes:
-            # Limpiar los paquetes anteriores
-            cursor.execute("DELETE FROM detalle_ruta WHERE id_ruta = %s", (id_ruta,))
-            
-            # Insertar los nuevos paquetes actualizados
-            for posicion, id_paquete in enumerate(paquetes, 1):
-                cursor.execute(
-                    """
-                    INSERT INTO detalle_ruta (id_ruta, id_paquete, posicion)
-                    VALUES (%s, %s, %s)
-                    """,
-                    (id_ruta, id_paquete, posicion)
-                )
-
-        conn.commit()
-        conn.close()
         return jsonify({"success": True, "mensaje": "Ruta actualizada exitosamente"})
-    except Exception as e:
-        return jsonify({"success": False, "error": str(e)}), 500
 
-def get_tiendas_por_depto(id_departamento):
-    """Obtiene tiendas de un departamento (internamente)."""
-    conn = get_connection()
-    cursor = conn.cursor()
-
-    cursor.execute(
-        """
-        SELECT DISTINCT t.id_tienda, t.nombre
-        FROM tiendas t
-        INNER JOIN municipios m ON t.id_municipio = m.id_municipio
-        WHERE m.id_departamento = %s
-        ORDER BY t.nombre
-        """,
-        (id_departamento,),
-    )
-
-    tiendas = cursor.fetchall()
-    conn.close()
-    return tiendas
+    except Exception as exc:
+        return jsonify({"success": False, "error": str(exc)}), 500
