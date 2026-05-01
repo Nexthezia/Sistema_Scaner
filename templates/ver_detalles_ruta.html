@@ -1,0 +1,51 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="Titulos">
+    <span>{{ title_web }}</span>
+    <div class="hr"></div>
+</div>
+
+<div style="max-width: 900px; margin: 20px auto; padding: 20px; background: #fff; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+    <div style="margin-bottom: 20px; padding: 15px; background: #f9f9f9; border-radius: 5px; border-left: 4px solid #000;">
+        <p style="margin: 5px 0;"><strong>ID Ruta:</strong> #{{ ruta.id_ruta }}</p>
+        <p style="margin: 5px 0;"><strong>Departamento:</strong> {{ ruta.departamento or 'Sin departamento' }}</p>
+        <p style="margin: 5px 0;"><strong>Tienda:</strong> {{ ruta.tienda or 'Sin tienda' }}</p>
+        <p style="margin: 5px 0;"><strong>Fecha de Creación:</strong> {{ ruta.fecha_creacion.strftime('%d/%m/%Y %H:%M') if ruta.fecha_creacion else 'N/A' }}</p>
+    </div>
+
+    <h3>Paquetes Escaneados ({{ paquetes|length }})</h3>
+    <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
+        <thead>
+            <tr style="background-color: #000; color: #fff;">
+                <th style="padding: 10px; border: 1px solid #ddd; text-align: left;">#</th>
+                <th style="padding: 10px; border: 1px solid #ddd; text-align: left;">Código de Barras</th>
+                <th style="padding: 10px; border: 1px solid #ddd; text-align: left;">Cliente</th>
+                <th style="padding: 10px; border: 1px solid #ddd; text-align: left;">Teléfono</th>
+                <th style="padding: 10px; border: 1px solid #ddd; text-align: left;">Precio</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for p in paquetes %}
+            <tr style="border-bottom: 1px solid #eee;">
+                <td style="padding: 10px;">{{ p.posicion }}</td>
+                <td style="padding: 10px;">{{ p.codigo_barras }}</td>
+                <td style="padding: 10px;">{{ p.nombre_cliente }}</td>
+                <td style="padding: 10px;">{{ p.telefono or '-' }}</td>
+                <td style="padding: 10px;">Q{{ "%.2f"|format(p.precio|float) if p.precio is not none else "0.00" }}</td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="5" style="padding: 20px; text-align: center; color: #666;">No hay paquetes asignados a esta ruta.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div style="margin-top: 30px; text-align: right;">
+        <a href="{{ url_for('rutas.ver_rutas') }}" style="padding: 10px 20px; background: #000; color: #fff; text-decoration: none; border-radius: 5px; font-weight: bold;">
+            ← Volver a Ver Rutas
+        </a>
+    </div>
+</div>
+{% endblock %}

@@ -1,6 +1,8 @@
-from flask import Blueprint, render_template, request, jsonify
+from flask import Blueprint, render_template, request, jsonify, make_response
 from models.db import get_connection
 from routes.ubicaciones import get_departamentos
+import io
+import csv
 
 rutas_bp = Blueprint("rutas", __name__, url_prefix="/rutas")
 
@@ -12,6 +14,18 @@ def gestionar_rutas():
         "gestionar_rutas.html",
         title_web="GESTIONAR RUTAS",
         departamentos=departamentos,
+    )
+
+
+@rutas_bp.route("/editar/<int:id_ruta>", methods=["GET"])
+def editar_ruta_view(id_ruta):
+    """Vista para editar una ruta existente."""
+    departamentos = get_departamentos()
+    return render_template(
+        "gestionar_rutas.html",
+        title_web=f"EDITAR RUTA #{id_ruta}",
+        departamentos=departamentos,
+        id_ruta_editar=id_ruta,
     )
 
 
@@ -123,6 +137,54 @@ def ver_rutas():
         )
 
 
+@rutas_bp.route("/ver_detalles/<int:id_ruta>", methods=["GET"])
+def ver_detalles_ruta_view(id_ruta):
+    """Página para ver los detalles de una ruta en HTML sin usar JS."""
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        cursor.execute(
+            """
+            SELECT r.id_ruta, r.nombre_ruta, r.id_departamento, d.nombre as departamento,
+                   r.id_tienda, t.nombre as tienda, r.fecha_creacion
+            FROM rutas r
+            LEFT JOIN departamentos d ON r.id_departamento = d.id_departamento
+            LEFT JOIN tiendas t ON r.id_tienda = t.id_tienda
+            WHERE r.id_ruta = %s
+            """,
+            (id_ruta,),
+        )
+        ruta = cursor.fetchone()
+
+        if not ruta:
+            conn.close()
+            return "Ruta no encontrada", 404
+
+        cursor.execute(
+            """
+            SELECT dr.posicion, p.codigo_barras, p.nombre_cliente,
+                   p.telefono, p.email, p.precio
+            FROM detalle_ruta dr
+            INNER JOIN paquetes p ON dr.id_paquete = p.id_paquete
+            WHERE dr.id_ruta = %s
+            ORDER BY dr.posicion
+            """,
+            (id_ruta,),
+        )
+        paquetes = cursor.fetchall()
+        conn.close()
+
+        return render_template(
+            "ver_detalles_ruta.html",
+            title_web=f"Detalles - {ruta['nombre_ruta']}",
+            ruta=ruta,
+            paquetes=paquetes
+        )
+    except Exception as e:
+        return f"Error al cargar detalles: {str(e)}", 500
+
+
 @rutas_bp.route("/detalles/<int:id_ruta>", methods=["GET"])
 def detalles_ruta(id_ruta):
     """Obtiene los detalles de una ruta específica."""
@@ -132,8 +194,8 @@ def detalles_ruta(id_ruta):
 
         cursor.execute(
             """
-            SELECT r.id_ruta, r.nombre_ruta, d.nombre as departamento,
-                   t.nombre as tienda, r.fecha_creacion
+            SELECT r.id_ruta, r.nombre_ruta, r.id_departamento, d.nombre as departamento,
+                   r.id_tienda, t.nombre as tienda, r.fecha_creacion
             FROM rutas r
             LEFT JOIN departamentos d ON r.id_departamento = d.id_departamento
             LEFT JOIN tiendas t ON r.id_tienda = t.id_tienda
@@ -317,6 +379,114 @@ def actualizar_ruta(id_ruta):
         return jsonify({"success": True, "mensaje": "Ruta actualizada exitosamente"})
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 500
+
+
+@rutas_bp.route("/imprimir/<int:id_ruta>")
+def imprimir_ruta(id_ruta):
+    """Genera una página HTML formateada para imprimir los detalles de una ruta."""
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        cursor.execute(
+            """
+            SELECT r.id_ruta, r.nombre_ruta, d.nombre as departamento,
+                   t.nombre as tienda, r.fecha_creacion
+            FROM rutas r
+            LEFT JOIN departamentos d ON r.id_departamento = d.id_departamento
+            LEFT JOIN tiendas t ON r.id_tienda = t.id_tienda
+            WHERE r.id_ruta = %s
+            """,
+            (id_ruta,),
+        )
+        ruta = cursor.fetchone()
+
+        if not ruta:
+            conn.close()
+            return "Ruta no encontrada", 404
+
+        cursor.execute(
+            """
+            SELECT dr.posicion, p.codigo_barras, p.nombre_cliente, p.telefono, p.precio
+            FROM detalle_ruta dr
+            INNER JOIN paquetes p ON dr.id_paquete = p.id_paquete
+            WHERE dr.id_ruta = %s
+            ORDER BY dr.posicion
+            """,
+            (id_ruta,),
+        )
+        paquetes = cursor.fetchall()
+        conn.close()
+
+        return render_template("imprimir_ruta.html", ruta=ruta, paquetes=paquetes)
+    except Exception as e:
+        print(f"Error al generar impresión de ruta: {e}")
+        return "Error al generar la página de impresión", 500
+
+
+@rutas_bp.route("/descargar/<int:id_ruta>")
+def descargar_ruta_csv(id_ruta):
+    """Genera y descarga un archivo CSV con los detalles de la ruta."""
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        cursor.execute(
+            """
+            SELECT r.nombre_ruta, d.nombre as departamento, t.nombre as tienda, r.fecha_creacion
+            FROM rutas r
+            LEFT JOIN departamentos d ON r.id_departamento = d.id_departamento
+            LEFT JOIN tiendas t ON r.id_tienda = t.id_tienda
+            WHERE r.id_ruta = %s
+            """,
+            (id_ruta,),
+        )
+        ruta = cursor.fetchone()
+
+        if not ruta:
+            conn.close()
+            return "Ruta no encontrada", 404
+
+        cursor.execute(
+            """
+            SELECT dr.posicion, p.codigo_barras, p.nombre_cliente, p.telefono, p.email, p.precio
+            FROM detalle_ruta dr
+            INNER JOIN paquetes p ON dr.id_paquete = p.id_paquete
+            WHERE dr.id_ruta = %s
+            ORDER BY dr.posicion
+            """,
+            (id_ruta,),
+        )
+        paquetes = cursor.fetchall()
+        conn.close()
+
+        output = io.StringIO()
+        writer = csv.writer(output, delimiter=";")
+
+        writer.writerow(["Ruta", ruta["nombre_ruta"]])
+        writer.writerow(["Departamento", ruta["departamento"] or ""])
+        writer.writerow(["Tienda", ruta["tienda"] or ""])
+        writer.writerow(["Fecha", ruta["fecha_creacion"].strftime("%d/%m/%Y %H:%M") if ruta["fecha_creacion"] else ""])
+        writer.writerow([])
+        writer.writerow(["Posicion", "Codigo barras", "Cliente", "Telefono", "Email", "Precio"])
+
+        for paquete in paquetes:
+            writer.writerow([
+                paquete['posicion'], paquete['codigo_barras'], paquete['nombre_cliente'],
+                paquete['telefono'] or "", paquete['email'] or "", paquete['precio'] or ""
+            ])
+
+        nombre_sano = "".join(c for c in ruta["nombre_ruta"] if c.isalnum() or c in (" ", "_")).rstrip()
+        nombre_archivo = f"ruta_{nombre_sano}.csv"
+
+        response = make_response(output.getvalue())
+        response.headers["Content-Disposition"] = f"attachment; filename={nombre_archivo}"
+        response.headers["Content-type"] = "text/csv; charset=utf-8"
+        response.data = b"\xef\xbb\xbf" + response.data.encode("utf-8")
+        return response
+    except Exception as e:
+        print(f"Error al descargar CSV: {e}")
+        return "Error al generar el archivo CSV", 500
 
 def get_tiendas_por_depto(id_departamento):
     """Obtiene tiendas de un departamento (internamente)."""
