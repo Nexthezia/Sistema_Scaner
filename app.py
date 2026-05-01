@@ -4,9 +4,6 @@ from routes.gestionar_rutas import rutas_bp
 
 app = Flask(__name__)
 
-#Guarda cache por 1 año
-app = Flask(__name__)
-
 # Configura el cache para 1 año (31,536,000 segundos)
 #app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 31536000
 

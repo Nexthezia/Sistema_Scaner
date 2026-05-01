@@ -32,6 +32,7 @@ def editar_ruta_view(id_ruta):
 @rutas_bp.route("/ver", methods=["GET"])
 def ver_rutas():
     """Página para ver rutas creadas con filtros por departamento y tienda."""
+    departamentos = []
     try:
         id_departamento = request.args.get("departamento", type=int)
         id_tienda = request.args.get("tienda", type=int)
@@ -128,7 +129,7 @@ def ver_rutas():
             "ver_rutas.html",
             title_web="VER RUTAS",
             rutas=[],
-            departamentos=get_departamentos(),
+            departamentos=departamentos, # Usamos la lista que ya tenemos (puede estar vacía si falló antes)
             tiendas=[],
             filtro_departamento=None,
             filtro_tienda=None,
