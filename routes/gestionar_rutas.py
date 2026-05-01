@@ -29,7 +29,7 @@ def get_tiendas_por_depto(id_departamento: int) -> list:
     return tiendas
 
 
-def _build_rutas_query(id_departamento: int | None, id_tienda: int | None) -> tuple[str, list]:
+def _build_rutas_query(id_departamento, id_tienda):
     """Construye la cláusula WHERE y los parámetros para la consulta de rutas."""
     filtros, params = [], []
     if id_departamento:
@@ -42,7 +42,7 @@ def _build_rutas_query(id_departamento: int | None, id_tienda: int | None) -> tu
     return where, params
 
 
-def _get_departamento_de_tienda(cursor, id_tienda: int) -> int | None:
+def _get_departamento_de_tienda(cursor, id_tienda: int):
     """Obtiene el id_departamento al que pertenece una tienda."""
     cursor.execute(
         """
@@ -114,7 +114,6 @@ def ver_rutas():
         )
         rutas = cursor.fetchall()
 
-        # Determinar departamento seleccionado para cargar tiendas en el filtro
         departamento_seleccionado = id_departamento or (
             _get_departamento_de_tienda(cursor, id_tienda) if id_tienda else None
         )
@@ -281,10 +280,10 @@ def validar_codigo_barras(codigo: str):
 def guardar_ruta():
     """Crea una nueva ruta con sus paquetes."""
     data = request.json or {}
-    nombre_ruta   = data.get("nombre_ruta")
+    nombre_ruta     = data.get("nombre_ruta")
     id_departamento = data.get("id_departamento")
-    id_tienda     = data.get("id_tienda")
-    paquetes      = data.get("paquetes", [])
+    id_tienda       = data.get("id_tienda")
+    paquetes        = data.get("paquetes", [])
 
     if not all([nombre_ruta, id_departamento, id_tienda, paquetes]):
         return jsonify({"success": False, "error": "Datos incompletos"}), 400
@@ -353,6 +352,9 @@ def actualizar_ruta(id_ruta: int):
         conn.close()
 
         return jsonify({"success": True, "mensaje": "Ruta actualizada exitosamente"})
+
+    except Exception as exc:
+        return jsonify({"success": False, "error": str(exc)}), 500
 
 
 @rutas_bp.route("/imprimir/<int:id_ruta>")
@@ -453,31 +455,13 @@ def descargar_ruta_csv(id_ruta):
         nombre_sano = "".join(c for c in ruta["nombre_ruta"] if c.isalnum() or c in (" ", "_")).rstrip()
         nombre_archivo = f"ruta_{nombre_sano}.csv"
 
-        response = make_response(output.getvalue())
+        # Corrección: construir la respuesta correctamente con BOM para UTF-8
+        csv_bytes = b"\xef\xbb\xbf" + output.getvalue().encode("utf-8")
+        response = make_response(csv_bytes)
         response.headers["Content-Disposition"] = f"attachment; filename={nombre_archivo}"
-        response.headers["Content-type"] = "text/csv; charset=utf-8"
-        response.data = b"\xef\xbb\xbf" + response.data.encode("utf-8")
+        response.headers["Content-Type"] = "text/csv; charset=utf-8"
         return response
+
     except Exception as e:
         print(f"Error al descargar CSV: {e}")
         return "Error al generar el archivo CSV", 500
-
-def get_tiendas_por_depto(id_departamento):
-    """Obtiene tiendas de un departamento (internamente)."""
-    conn = get_connection()
-    cursor = conn.cursor()
-
-    cursor.execute(
-        """
-        SELECT DISTINCT t.id_tienda, t.nombre
-        FROM tiendas t
-        INNER JOIN municipios m ON t.id_municipio = m.id_municipio
-        WHERE m.id_departamento = %s
-        ORDER BY t.nombre
-        """,
-        (id_departamento,),
-    )
-
-    tiendas = cursor.fetchall()
-    conn.close()
-    return tiendas
