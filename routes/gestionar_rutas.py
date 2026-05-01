@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, jsonify, make_response
+from flask import Blueprint, render_template, request, jsonify, make_response, redirect, url_for
 from models.db import get_connection
 from routes.ubicaciones import get_departamentos
 import io
@@ -9,12 +9,7 @@ rutas_bp = Blueprint("rutas", __name__, url_prefix="/rutas")
 
 @rutas_bp.route("/", methods=["GET"])
 def gestionar_rutas():
-    departamentos = get_departamentos()
-    return render_template(
-        "gestionar_rutas.html",
-        title_web="GESTIONAR RUTAS",
-        departamentos=departamentos,
-    )
+    return redirect(url_for(".ver_rutas"))
 
 
 @rutas_bp.route("/editar/<int:id_ruta>", methods=["GET"])

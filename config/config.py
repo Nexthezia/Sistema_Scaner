@@ -6,7 +6,7 @@ DB_CONFIG = {
     "host": "nioyfp.mysql.pythonanywhere-services.com",
     "user": "nioyfp",
     "password": "ventas232323",
-    "database": "nioyfp$ScanLogix", # Asegúrate que el nombre de la BD sea el correcto en PythonAnywhere
+    "database": "nioyfp$ventas232323",
     "port": 3306,
     "cursorclass": "DictCursor"
 }
