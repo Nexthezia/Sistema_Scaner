@@ -1,4 +1,3 @@
-
 function escapeCsv(value) {
     const text = String(value ?? "");
     return `"${text.replace(/"/g, '""')}"`;
@@ -56,26 +55,30 @@ async function verDetalles(idRuta) {
         detalleRuta.innerHTML = `
             <p><strong>ID</strong>Ruta #${ruta.id_ruta}</p>
             <p><strong>Departamento</strong>${ruta.departamento || "Sin departamento"}</p>
+            <p><strong>Municipio</strong>${ruta.municipio || "Sin municipio"}</p>
             <p><strong>Tienda</strong>${ruta.tienda || "Sin tienda"}</p>
             <p><strong>Creación</strong>${ruta.fecha_creacion || "Sin fecha"}</p>
         `;
 
         cuerpoPaquetes.innerHTML = paquetes.length
             ? paquetes.map((paquete) => `
-                <tr>
-                    <td>${paquete.posicion}</td>
-                    <td>${paquete.codigo_barras}</td>
-                    <td>${paquete.nombre_cliente}</td>
-                    <td>${paquete.telefono || "-"}</td>
-                    <td>${paquete.email || "-"}</td>
-                    <td>${formatearMoneda(paquete.precio)}</td>
-                </tr>
-            `).join("")
-            : `
-                <tr>
-                    <td colspan="6">Esta ruta todavía no tiene paquetes registrados.</td>
-                </tr>
-            `;
+        <tr>
+            <td>${paquete.posicion}</td>
+            <td>${paquete.codigo_barras}</td>
+            <td>${paquete.nombre_cliente}</td>
+            <td>${paquete.telefono || "-"}</td>
+            <td>${paquete.email || "-"}</td>
+            <td>${paquete.departamento || "-"}</td>
+            <td>${paquete.municipio || "-"}</td>
+            <td>${paquete.tienda || "-"}</td>
+            <td>${formatearMoneda(paquete.precio)}</td>
+        </tr>
+        `).join("")
+                : `
+            <tr>
+                <td colspan="9">Esta ruta todavía no tiene paquetes registrados.</td>
+            </tr>
+        `;
 
         abrirModal();
     } catch (error) {
@@ -166,6 +169,7 @@ async function imprimirRuta(idRuta) {
                 <div class="header">
                     <h2>Ruta: ${ruta.nombre_ruta}</h2>
                     <p><strong>Departamento:</strong> ${ruta.departamento || "N/A"}</p>
+                    <p><strong>Municipio:</strong> ${ruta.municipio || "N/A"}</p>
                     <p><strong>Tienda:</strong> ${ruta.tienda || "N/A"}</p>
                     <p><strong>Fecha:</strong> ${ruta.fecha_creacion || "N/A"}</p>
                 </div>

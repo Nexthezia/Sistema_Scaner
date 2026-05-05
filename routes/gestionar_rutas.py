@@ -169,9 +169,15 @@ def ver_detalles_ruta_view(id_ruta):
         cursor.execute(
             """
             SELECT dr.posicion, p.codigo_barras, p.nombre_cliente,
-                   p.telefono, p.email, p.precio
+                   p.telefono, p.email, p.precio,
+                   d.nombre  AS departamento,
+                   m.nombre  AS municipio,
+                   t.nombre  AS tienda
             FROM detalle_ruta dr
-            INNER JOIN paquetes p ON dr.id_paquete = p.id_paquete
+            INNER JOIN paquetes      p ON dr.id_paquete      = p.id_paquete
+            LEFT  JOIN departamentos d ON p.id_departamento  = d.id_departamento
+            LEFT  JOIN municipios    m ON p.id_municipio     = m.id_municipio
+            LEFT  JOIN tiendas       t ON p.id_tienda        = t.id_tienda
             WHERE dr.id_ruta = %s
             ORDER BY dr.posicion
             """,
@@ -223,9 +229,15 @@ def detalles_ruta(id_ruta: int):
             """
             SELECT dr.posicion,
                    p.id_paquete, p.codigo_barras, p.nombre_cliente,
-                   p.telefono, p.email, p.precio
+                   p.telefono, p.email, p.precio,
+                   d.nombre  AS departamento,
+                   m.nombre  AS municipio,
+                   t.nombre  AS tienda
             FROM   detalle_ruta dr
-            INNER  JOIN paquetes p ON dr.id_paquete = p.id_paquete
+            INNER  JOIN paquetes      p ON dr.id_paquete      = p.id_paquete
+            LEFT   JOIN departamentos d ON p.id_departamento  = d.id_departamento
+            LEFT   JOIN municipios    m ON p.id_municipio     = m.id_municipio
+            LEFT   JOIN tiendas       t ON p.id_tienda        = t.id_tienda
             WHERE  dr.id_ruta = %s
             ORDER  BY dr.posicion
             """,
@@ -238,7 +250,6 @@ def detalles_ruta(id_ruta: int):
 
     except Exception as exc:
         return jsonify({"success": False, "error": str(exc)}), 500
-
 
 @rutas_bp.route("/get_tiendas/<int:id_departamento>", methods=["GET"])
 def get_tiendas_por_departamento(id_departamento: int):
